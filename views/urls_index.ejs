@@ -16,7 +16,7 @@
 
                 <a href= "/urls/<%= url %>">Edit</a>
 
-                <form method="POST" action="/urls/<%= url %>/delete"><button>delete</button></form>
+                <form style="display:inline;" method="POST" action="/urls/<%= url %>/delete"><button>delete</button></form>
             </li>
 
         <% } %>
@@ -24,24 +24,7 @@
 
         <a href= "/urls/new">Shorten URL</a >
 
-
-
 </body>
 </html>
 
 
-
-<!--         <table>
-        <tr>
-        <th>Short URL</th>
-        <th>Long URL</th>
-        </tr>
-        <tr>
-        <dt>
-        <% for(url in urls) { %>
-        <%= url %> : <%= urls[url] %>
-        <% } %>
-
-
-    </table>
- -->
