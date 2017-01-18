@@ -35,21 +35,20 @@ app.get("/urls", (request, response) =>{
     response.render("urls_index", templateVars)
 });
 
-
-
-app.get("/url/:id", (request, response) => {
-    let templateVars = {shortURL: request.params.id, urls: urlDatabase};
-    response.render("urls_show", templateVars);
-});
-
 app.get("/urls/new", (request, response) => {
     response.render("urls_new");
 });
 
-app.post("/urls", (request, response) => {
-    console.log(request.body);
-    response.send("Ok");
+app.get("/urls/:id", (request, response) => {
+    let templateVars = {shortURL: request.params.id, urls: urlDatabase};
+    response.render("urls_show", templateVars);
 });
+
+
+// app.post("/urls", (request, response) => {
+//     console.log(request.body);
+//     response.send("Ok");
+// });
 
 app.post("/urls/new", (request, response) => {
     console.log(request.body)
@@ -58,15 +57,30 @@ app.post("/urls/new", (request, response) => {
 
     urlDatabase[shortURL] = longURL;
     console.log(urlDatabase);
-    response.redirect("/u/" + shortURL);
-
+    response.redirect("/urls/" + shortURL);
 });
 
 app.get("/u/:x", (request, response) => {
   let longURL = urlDatabase[request.params.x];
-  console.log(request.params)
+  console.log(request.params);
   response.redirect(longURL);
 });
+
+app.post("/urls/:shortURL/delete", (request, response) => {
+    let obj = request.params.shortURL;
+    delete urlDatabase[obj]
+    response.redirect("/urls");
+});
+
+
+app.post("/urls/:shortURL", (request, response) => {
+    let shortURL = request.params.shortURL;
+    let newLongURL = request.body.newlongURL;
+
+    urlDatabase[shortURL] = newLongURL;
+    response.redirect("/urls/")
+})
+
 
 
 

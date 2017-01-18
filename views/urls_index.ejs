@@ -5,6 +5,7 @@
 </head>
 <body>
     <%include partials/_header%>
+
     <p>List of URLs</p>
 
         <ul>
@@ -12,12 +13,35 @@
 
             <li>
                 <%= url %> : <%= urls[url] %>
+
+                <a href= "/urls/<%= url %>">Edit</a>
+
+                <form method="POST" action="/urls/<%= url %>/delete"><button>delete</button></form>
             </li>
 
         <% } %>
         </ul>
 
-        <a>Shorten URL</a>
+        <a href= "/urls/new">Shorten URL</a >
+
+
 
 </body>
 </html>
+
+
+
+<!--         <table>
+        <tr>
+        <th>Short URL</th>
+        <th>Long URL</th>
+        </tr>
+        <tr>
+        <dt>
+        <% for(url in urls) { %>
+        <%= url %> : <%= urls[url] %>
+        <% } %>
+
+
+    </table>
+ -->
