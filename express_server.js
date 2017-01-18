@@ -12,6 +12,16 @@ var urlDatabase = {
     "9sm5xk": "http://www.google.com"
 };
 
+function generateRandomString() {
+        var text = "";
+        var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+        for( var i=0; i < 6; i++ )
+            text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+        return text;
+    }
+
 app.get("/", (request, response) => {
     response.end("Hello!");
 });
@@ -25,11 +35,6 @@ app.get("/urls", (request, response) =>{
     response.render("urls_index", templateVars)
 });
 
-app.get("/urls/new", (request, response) => {
-    return "WTF dude";
-    console.log("What<S uop");
-    response.render("urls_new");
-});
 
 
 app.get("/url/:id", (request, response) => {
@@ -37,34 +42,31 @@ app.get("/url/:id", (request, response) => {
     response.render("urls_show", templateVars);
 });
 
+app.get("/urls/new", (request, response) => {
+    response.render("urls_new");
+});
+
 app.post("/urls", (request, response) => {
     console.log(request.body);
     response.send("Ok");
 });
 
-app.post("/urls/create", (request, response) => {
-
-    var longURL = request.body.urlDatabase;
-    var shortURL = function generateRandomString() {
-        var text = "";
-        var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-
-        for( var i=0; i < 6; i++ )
-            text += possible.charAt(Math.floor(Math.random() * possible.length));
-
-        return text;
-    }
+app.post("/urls/new", (request, response) => {
+    console.log(request.body)
+    var longURL = request.body["longURL"];
+    var shortURL = generateRandomString();
 
     urlDatabase[shortURL] = longURL;
-    response.redirect("shortURL");
+    console.log(urlDatabase);
+    response.redirect("/u/" + shortURL);
+
 });
 
-
-
-
-
-
-
+app.get("/u/:x", (request, response) => {
+  let longURL = urlDatabase[request.params.x];
+  console.log(request.params)
+  response.redirect(longURL);
+});
 
 
 
