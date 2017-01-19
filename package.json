@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/scottfarmer2/Tiny-project/issues"
   },
-  "homepage": "https://github.com/scottfarmer2/Tiny-project#readme"
+  "homepage": "https://github.com/scottfarmer2/Tiny-project#readme",
+  "dependencies": {
+    "cookie-parser": "^1.4.3"
+  }
 }
