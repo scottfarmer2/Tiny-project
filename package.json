@@ -17,6 +17,9 @@
   },
   "homepage": "https://github.com/scottfarmer2/Tiny-project#readme",
   "dependencies": {
-    "cookie-parser": "^1.4.3"
+    "body-parser": "^1.16.0",
+    "cookie-parser": "^1.4.3",
+    "ejs": "^2.5.5",
+    "express": "^4.14.0"
   }
 }
