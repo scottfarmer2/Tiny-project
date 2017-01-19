@@ -1,18 +1,20 @@
 <h1>Tiny App</h1>
-<p><%=username%></p>
+<p><%=email%></p>
 
-    <% if (!username) { %>
+    <% if (!email) { %>
 
     <form action="/login" method="POST">
         <label for="Sign IN">Login:</label>
-        <input name="username">
+        <input name="email">
         <input type="submit" value="sign in">
     </form>
-
+    <a href="/register">To Register</a>
     <% } else { %>
 
     <form action="/logout" method="POST">
         <input type="submit" value="logout">
     </form>
+
+
 
     <% } %>
