@@ -51,18 +51,18 @@ app.get("/urls/:id", (request, response) => {
 // });
 
 app.post("/urls/new", (request, response) => {
-    console.log(request.body)
+    // console.log(request.body)
     var longURL = request.body["longURL"];
     var shortURL = generateRandomString();
 
     urlDatabase[shortURL] = longURL;
-    console.log(urlDatabase);
+    // console.log(urlDatabase);
     response.redirect("/urls/" + shortURL);
 });
 
 app.get("/u/:x", (request, response) => {
   let longURL = urlDatabase[request.params.x];
-  console.log(request.params);
+  // console.log(request.params);
   response.redirect(longURL);
 });
 

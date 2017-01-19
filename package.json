@@ -1,0 +1,19 @@
+{
+  "name": "tinyapp",
+  "version": "1.0.0",
+  "description": "Our tiny app that creates new short urls",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/scottfarmer2/Tiny-project.git"
+  },
+  "author": "Scott Farmer",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/scottfarmer2/Tiny-project/issues"
+  },
+  "homepage": "https://github.com/scottfarmer2/Tiny-project#readme"
+}
