@@ -1,4 +1,5 @@
 var express = require("express");
+var cookieParser = require('cookie-parser')
 var app = express();
 var PORT = process.env.PORT || 8080;
 const bodyParser = require("body-parser");
@@ -6,6 +7,8 @@ const bodyParser = require("body-parser");
 app.set("view engine", "ejs");
 
 app.use(bodyParser.urlencoded({extended: true}));
+
+app.use(cookieParser());
 
 var urlDatabase = {
     "b2xVn2": "http://www.lighthouselabs.ca",
@@ -31,7 +34,8 @@ app.get("urls.json", (request, response) => {
 });
 
 app.get("/urls", (request, response) =>{
-    let templateVars = {urls: urlDatabase};
+    let templateVars = {urls: urlDatabase,
+                        username: request.cookies["user"]};
     response.render("urls_index", templateVars)
 });
 
@@ -40,15 +44,12 @@ app.get("/urls/new", (request, response) => {
 });
 
 app.get("/urls/:id", (request, response) => {
-    let templateVars = {shortURL: request.params.id, urls: urlDatabase};
+    let templateVars = {shortURL: request.params.id,
+                        urls: urlDatabase,
+                        username: request.cookies["user"]};
     response.render("urls_show", templateVars);
 });
 
-
-// app.post("/urls", (request, response) => {
-//     console.log(request.body);
-//     response.send("Ok");
-// });
 
 app.post("/urls/new", (request, response) => {
     // console.log(request.body)
@@ -81,7 +82,11 @@ app.post("/urls/:shortURL", (request, response) => {
     response.redirect("/urls/")
 })
 
-
+app.post("/login", (request, response) => {
+    let username = request.body.username;
+    response.cookie('user', username);
+    response.redirect("/");
+})
 
 
 app.listen(PORT, () => {
