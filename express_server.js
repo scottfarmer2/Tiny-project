@@ -1,7 +1,8 @@
-var express = require("express");
-var cookieParser = require('cookie-parser')
-var app = express();
-var PORT = process.env.PORT || 8080;
+const express = require("express");
+const cookieParser = require('cookie-parser')
+const app = express();
+const bcrypt = require('bcrypt');
+const PORT = process.env.PORT || 8080;
 const bodyParser = require("body-parser");
 
 app.set("view engine", "ejs");
@@ -61,6 +62,7 @@ app.get("/urls", (request, response) =>{
     var email = ""
     if (!request.cookies["id"]) {
         response.redirect("/register");
+        return;
     }
     let templateVars = {urls: urlDatabase,
                         email: users[request.cookies["id"]].email};
@@ -75,7 +77,7 @@ app.get("/urls/new", (request, response) => {
     var email = ""
     if (!request.cookies["id"]) {
         response.redirect("/register");
-        return
+        return;
     } else {
         response.render("urls_new", {email: users[request.cookies["id"]].email});
         return;
@@ -133,9 +135,11 @@ app.post("/register", (request, response) => {
         response.status(400).send("something wrong");
     } else {
     let id = generateRandomString();
+    let password = request.body["password"];
+    const hashed_password = bcrypt.hashSync(password, 10);
     let templateVars = {id: id,
                         email: request.body["email"],
-                        password: request.body["password"]};
+                        password: hashed_password};
     users[id] = templateVars;
     response.cookie("id", id)
     console.log(users);
@@ -189,7 +193,7 @@ app.post("/login", (request, response) => {
             theID = key;
         }
     }
-    if( !theID || request.body["password"] !== users[theID].password) {
+    if( !theID || !bcrypt.compareSync(request.body["password"], users[theID].password)) {
         response.status(403)
         response.send("this is not working");
         return;
