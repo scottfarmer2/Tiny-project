@@ -60,7 +60,7 @@ app.get("urls.json", (request, response) => {
 app.get("/urls", (request, response) =>{
     var email = ""
     if (!request.cookies["id"]) {
-        response.render("/register");
+        response.redirect("/register");
     }
     let templateVars = {urls: urlDatabase,
                         email: users[request.cookies["id"]].email};
@@ -89,7 +89,7 @@ app.get("/urls/:id", (request, response) => {
 
     var email = ""
     if (!request.cookies["id"]) {
-        response.render("/register");
+        response.redirect("/register");
         return;
     }
 
