@@ -1,15 +1,23 @@
+const cookieSession = require('cookie-session');
 const express = require("express");
-const cookieParser = require('cookie-parser')
+// const cookieParser = require('cookie-parser');
 const app = express();
 const bcrypt = require('bcrypt');
 const PORT = process.env.PORT || 8080;
 const bodyParser = require("body-parser");
 
+app.use(cookieSession({
+    name: 'session',
+    keys: ['facebutt', 'sss'],
+
+    maxAge: 24 * 60 * 60 * 1000
+}));
+
 app.set("view engine", "ejs");
 
 app.use(bodyParser.urlencoded({extended: true})); // populates req.bodyw with the variables
 
-app.use(cookieParser());
+// app.use(cookieParser());
 
 var urlDatabase = {
     "b2xVn2": "http://www.lighthouselabs.ca",
@@ -60,12 +68,12 @@ app.get("urls.json", (request, response) => {
 
 app.get("/urls", (request, response) =>{
     var email = ""
-    if (!request.cookies["id"]) {
-        response.redirect("/register");
+    if (!request.session["id"]) {
+        response.redirect("/login");
         return;
     }
     let templateVars = {urls: urlDatabase,
-                        email: users[request.cookies["id"]].email};
+                        email: users[request.session["id"]].email};
     response.render("urls_index", templateVars);
     return;
 });
@@ -75,11 +83,11 @@ app.get("/urls", (request, response) =>{
 
 app.get("/urls/new", (request, response) => {
     var email = ""
-    if (!request.cookies["id"]) {
-        response.redirect("/register");
+    if (!request.session["id"]) {
+        response.redirect("/login");
         return;
     } else {
-        response.render("urls_new", {email: users[request.cookies["id"]].email});
+        response.render("urls_new", {email: users[request.session["id"]].email});
         return;
     }
 });
@@ -90,14 +98,14 @@ app.get("/urls/new", (request, response) => {
 app.get("/urls/:id", (request, response) => {
 
     var email = ""
-    if (!request.cookies["id"]) {
-        response.redirect("/register");
+    if (!request.session["id"]) {
+        response.redirect("/logout");
         return;
     }
 
     let templateVars = {shortURL: request.params.id,
                         urls: urlDatabase,
-                        email: users[request.cookies["id"]].email};
+                        email: users[request.session["id"]].email};
     response.render("urls_show", templateVars);
     return;
 });
@@ -141,7 +149,7 @@ app.post("/register", (request, response) => {
                         email: request.body["email"],
                         password: hashed_password};
     users[id] = templateVars;
-    response.cookie("id", id)
+    request.session["id"] = id////////////////////////////////
     console.log(users);
     response.redirect("/");
     }
@@ -151,7 +159,7 @@ app.post("/register", (request, response) => {
 
 app.post("/urls/new", (request, response) => {
     var email = ""
-    if (!request.cookies["id"]) {
+    if (!request.session["id"]) {
         response.render("/register");
         return;
     }
@@ -195,10 +203,10 @@ app.post("/login", (request, response) => {
     }
     if( !theID || !bcrypt.compareSync(request.body["password"], users[theID].password)) {
         response.status(403)
-        response.send("this is not working");
+        response.send("Incorrect email or password!");
         return;
     } else {
-        response.cookie("id", theID);
+        request.session.id = theID;
         response.redirect("/")
     }
 });
@@ -206,8 +214,8 @@ app.post("/login", (request, response) => {
 // //////////////////////////////
 
 app.post("/logout", (request, response) => {
-    response.clearCookie('user');
-    response.redirect("/register");
+    request.session = null;
+    response.redirect("/login");
 });
 
 // ////////////////////////
