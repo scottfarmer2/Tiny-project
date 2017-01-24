@@ -20,16 +20,21 @@ app.use(bodyParser.urlencoded({extended: true})); // populates req.bodyw with th
 // app.use(cookieParser());
 
 var urlDatabase = {
-    "b2xVn2": "http://www.lighthouselabs.ca",
-    "9sm5xk": "http://www.google.com"
-};
+    "b2xVn2": {shortURL: "b2xVn2",
+                longURL: "http://www.lighthouselabs.ca",
+                userId: "dhfjh3"}
+    "9sm5xk": {shortURL: "9sm5xk",
+               longURL: "http://www.google.com",
+               userId: "dhfjh3"}
 
 
 
 ///////////
 ////create a database for the users id.
 
-var users = {"dhfjh3": {id: "dhfjh3", email: "smt", password:"1234"}}
+var users = {"dhfjh3": {id: "dhfjh3",
+                        email: "smt",
+                        password:"1234"}}
 
 function generateRandomString() {
         var text = "";
@@ -54,7 +59,7 @@ function checkEmails (newEmail) {
 ///////////////
 
 app.get("/", (request, response) => {
-    response.end("Hello!");
+    response.redirect("/urls");
 });
 
 //////////////
@@ -67,13 +72,12 @@ app.get("urls.json", (request, response) => {
 /////// In urls if there is no email, send to register page.
 
 app.get("/urls", (request, response) =>{
-    var email = ""
-    if (!request.session["id"]) {
-        response.redirect("/login");
-        return;
+    var email = "";
+    if (request.session["id"]) {
+        email = users[request.session["id"]].email;
     }
     let templateVars = {urls: urlDatabase,
-                        email: users[request.session["id"]].email};
+                        email: email};
     response.render("urls_index", templateVars);
     return;
 });
@@ -82,12 +86,11 @@ app.get("/urls", (request, response) =>{
 //////
 
 app.get("/urls/new", (request, response) => {
-    var email = ""
-    if (!request.session["id"]) {
-        response.redirect("/login");
-        return;
+    var email = "";
+    if (request.session["id"]) {
+        email = users[request.session["id"]].email
     } else {
-        response.render("urls_new", {email: users[request.session["id"]].email});
+        response.render("urls_new", {email: email});
         return;
     }
 });
@@ -139,19 +142,19 @@ app.get("/login", (request, response) => {
 app.post("/register", (request, response) => {
     if (request.body["email"] === "" || request.body["password"] === "") {
         response.status(400).send("You must fill in the inputs!")
-    } if (checkEmails(request.body["email"]) === true) {
+    }
+    if (checkEmails(request.body["email"])) {
         response.status(400).send("something wrong");
     } else {
-    let id = generateRandomString();
-    let password = request.body["password"];
-    const hashed_password = bcrypt.hashSync(password, 10);
-    let templateVars = {id: id,
+        let id = generateRandomString();
+        let password = request.body["password"];
+        const hashed_password = bcrypt.hashSync(password, 10);
+        let userInfo = {id: id,
                         email: request.body["email"],
                         password: hashed_password};
-    users[id] = templateVars;
-    request.session["id"] = id////////////////////////////////
-    console.log(users);
-    response.redirect("/");
+        users[id] = userInfo;
+        request.session["id"] = id////////////////////////////////
+        response.redirect("/urls");
     }
 });
 
@@ -192,9 +195,7 @@ app.post("/urls/:shortURL", (request, response) => {
 ///////////////////////////
 
 app.post("/login", (request, response) => {
-    // go through every key in users
-    // for every key, look at email
-    // if email is same as what we want
+
     var theID = "";
     for (var key in users) {
         if (users[key].email === request.body.email) {
@@ -225,13 +226,6 @@ app.listen(PORT, () => {
 });
 
 
-
-
-// app.post("/login", (request, response) => {
-//     let email = request.body.email;
-//     response.cookie('user', email);
-//     response.redirect("/urls");
-// });
 
 
 
