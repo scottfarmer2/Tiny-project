@@ -8,7 +8,7 @@ const bodyParser = require("body-parser");
 
 app.use(cookieSession({
     name: 'session',
-    keys: ['facebutt', 'sss'],
+    keys: ['facebook', 'sss'],
 
     maxAge: 24 * 60 * 60 * 1000
 }));
@@ -22,11 +22,11 @@ app.use(bodyParser.urlencoded({extended: true})); // populates req.bodyw with th
 var urlDatabase = {
     "b2xVn2": {shortURL: "b2xVn2",
                 longURL: "http://www.lighthouselabs.ca",
-                userId: "dhfjh3"}
+                userId: "dhfjh3"},
     "9sm5xk": {shortURL: "9sm5xk",
                longURL: "http://www.google.com",
                userId: "dhfjh3"}
-
+}
 
 
 ///////////
@@ -125,7 +125,6 @@ app.get("/register", (request, response) => {
 
 app.get("/u/:x", (request, response) => {
   let longURL = urlDatabase[request.params.x];
-  // console.log(request.params);
   response.redirect(longURL);
   return;
 });
