@@ -56,7 +56,14 @@ function checkEmails (newEmail) {
     }
 }
 
+
+function addUrl(shortURL, longURL, userId) {
+    urlDatabase[shortURL] = {"shortURL": shortURL,
+                            "longURL": longURL,
+                            "userId": userId};
+}
 ///////////////
+
 
 app.get("/", (request, response) => {
     response.redirect("/urls");
@@ -69,7 +76,7 @@ app.get("urls.json", (request, response) => {
 });
 
 /////////////////////
-/////// In urls if there is no email, send to register page.
+/////// In urls if there is no email, send to index page.
 
 app.get("/urls", (request, response) =>{
     var email = "";
@@ -77,9 +84,10 @@ app.get("/urls", (request, response) =>{
         email = users[request.session["id"]].email;
     }
     let templateVars = {urls: urlDatabase,
-                        email: email};
+                        email: email,
+                        user: request.session["id"]};
     response.render("urls_index", templateVars);
-    return;
+
 });
 
 //////////////////////
@@ -88,11 +96,10 @@ app.get("/urls", (request, response) =>{
 app.get("/urls/new", (request, response) => {
     var email = "";
     if (request.session["id"]) {
-        email = users[request.session["id"]].email
-    } else {
-        response.render("urls_new", {email: email});
-        return;
+        email = users[request.session["id"]].email;
     }
+    response.render("urls_new", {email: email});
+
 });
 
 ///////////////////////
@@ -103,14 +110,14 @@ app.get("/urls/:id", (request, response) => {
     var email = ""
     if (!request.session["id"]) {
         response.redirect("/logout");
-        return;
+
     }
 
     let templateVars = {shortURL: request.params.id,
                         urls: urlDatabase,
                         email: users[request.session["id"]].email};
     response.render("urls_show", templateVars);
-    return;
+
 });
 
 ////////////////////////////
@@ -118,7 +125,6 @@ app.get("/urls/:id", (request, response) => {
 
 app.get("/register", (request, response) => {
     response.render("urls_register");
-    return;
 });
 
 //////////////////////////////
@@ -126,14 +132,14 @@ app.get("/register", (request, response) => {
 app.get("/u/:x", (request, response) => {
   let longURL = urlDatabase[request.params.x];
   response.redirect(longURL);
-  return;
+
 });
 
 ////////////////////////////
 
 app.get("/login", (request, response) => {
     response.render("login");
-    return;
+
 })
 
 //////////////////////////
@@ -159,17 +165,17 @@ app.post("/register", (request, response) => {
 
 ///////////////////////////
 
-app.post("/urls/new", (request, response) => {
+
+
+app.post("/urls", (request, response) => {
     var email = ""
     if (!request.session["id"]) {
-        response.render("/register");
-        return;
+        response.redirect("/urls");
     }
     var longURL = request.body["longURL"];
     var shortURL = generateRandomString();
 
-    urlDatabase[shortURL] = longURL;
-    // console.log(urlDatabase);
+    addUrl(shortURL, longURL, request.session["id"]);
     response.redirect("/urls/" + shortURL);
 });
 
@@ -181,13 +187,13 @@ app.post("/urls/:shortURL/delete", (request, response) => {
     response.redirect("/urls");
 });
 
-////////////////////////////
+////////////////////////////UPDATE h
 
 app.post("/urls/:shortURL", (request, response) => {
     let shortURL = request.params.shortURL;
     let newLongURL = request.body.newlongURL;
 
-    urlDatabase[shortURL] = newLongURL;
+    urlDatabase[shortURL].longURL = newLongURL;
     response.redirect("/urls/")
 });
 
@@ -204,10 +210,10 @@ app.post("/login", (request, response) => {
     if( !theID || !bcrypt.compareSync(request.body["password"], users[theID].password)) {
         response.status(403)
         response.send("Incorrect email or password!");
-        return;
+
     } else {
         request.session.id = theID;
-        response.redirect("/")
+        response.redirect("/urls")
     }
 });
 
@@ -215,7 +221,7 @@ app.post("/login", (request, response) => {
 
 app.post("/logout", (request, response) => {
     request.session = null;
-    response.redirect("/login");
+    response.redirect("/urls");
 });
 
 // ////////////////////////

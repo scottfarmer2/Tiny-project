@@ -8,22 +8,31 @@
 
     <p>List of URLs</p>
 
+    <%if (email) {%>
+
         <ul>
         <% for(url in urls) { %>
 
-            <li>
-                <%= url %> : <%= urls[url] %>
+
+
+                <%if (user === urls[url].userId) {%>
+                <li>
+                <%= url %> : <%= urls[url].longURL %>
 
                 <a href= "/urls/<%= url %>">Edit</a>
 
                 <form style="display:inline;" method="POST" action="/urls/<%= url %>/delete"><button>delete</button></form>
-            </li>
+                </li>
+                <%}%>
+
 
         <% } %>
         </ul>
 
         <a href= "/urls/new">Shorten URL</a >
-
+    <%} else {%>
+    <p> Please Login or Register</p>
+    <%}%>
 </body>
 </html>
 
